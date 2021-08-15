@@ -21,7 +21,7 @@
 golem::fill_desc(
   pkg_name = "catnames", # The Name of the package containing the App
   pkg_title = "Cat Names", # The Title of the package containing the App
-  pkg_description = "A name explorer based upon data about shelter cats from ", # The Description of the package containing the App
+  pkg_description = "A name explorer based upon data about shelter cats from https://www.kaggle.com/c/sliced-s01e10-playoffs-2/data.", # The Description of the package containing the App
   author_first_name = "Afton", # Your First Name
   author_last_name = "Coombs", # Your Last Name
   author_email = "aftoncoombs@MAIL.COM", # Your Email
