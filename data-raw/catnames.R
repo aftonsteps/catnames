@@ -17,9 +17,8 @@ cat_names <-
   dplyr::mutate(color = strsplit(x = color,
                                  split = "/")) %>%
   tidyr::unnest(color) %>%
+  dplyr::select(breed, color, name) %>%
+  rbind(data.frame(breed = "Nyan", color = "Rainbow", name = "Nyancat")) %>%
   dplyr::arrange(breed, color)
-
-cat_breeds <- as.data.frame(table(catnames$breed))
-cat_colors <- as.data.frame(table(catnames$color))
 
 usethis::use_data(cat_names, overwrite = TRUE)

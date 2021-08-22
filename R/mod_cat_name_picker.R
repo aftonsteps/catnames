@@ -14,7 +14,8 @@ mod_cat_name_picker_ui <- function(id){
     uiOutput(outputId = ns("color_picker")),
     actionButton(inputId = ns("get_name"),
                  label = "Generate Name!"),
-    textOutput(outputId = ns("name_text"))
+    textOutput(outputId = ns("name_text")),
+    plotOutput(outputId = ns("plot_image"))
   )
 }
 
@@ -24,20 +25,54 @@ mod_cat_name_picker_ui <- function(id){
 mod_cat_name_picker_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
+
+    breed_filtered_cat_names <-
+      eventReactive(input$breed_picker, {
+        sel_breed <- input$breed_picker
+
+        avail_names <- cat_names
+
+        if (!is.null(sel_breed) && sel_breed != "ALL") {
+          avail_names <-
+            avail_names %>%
+            dplyr::filter(breed == sel_breed)
+        }
+
+        return(avail_names)
+      })
+
+    filtered_cat_names <-
+      eventReactive(input$color_picker, {
+        sel_color <- input$color_picker
+
+        avail_names <-
+          breed_filtered_cat_names()
+
+        if (!is.null(sel_color) && sel_color != "ALL") {
+          avail_names <-
+            avail_names %>%
+            dplyr::filter(color == sel_color)
+        }
+
+        return(avail_names)
+      })
+
     output$breed_picker <-
       renderUI({
-        avail_choices <- cat_names$breed
-        breeds <- selectInput(inputId = "breed_picker",
+        avail_choices <- c("ALL", unique(cat_names$breed))
+        breeds <- selectInput(inputId = ns("breed_picker"),
                               label = "Breed",
                               choices = avail_choices,
-                              selectize = FALSE)
+                              selectize = TRUE)
         return(breeds)
       })
 
     output$color_picker <-
       renderUI({
-        avail_choices <- cat_names$color
-        colors <- selectInput(inputId = "color_picker",
+        req(breed_filtered_cat_names())
+
+        avail_choices <- c("ALL", unique(breed_filtered_cat_names()$color))
+        colors <- selectInput(inputId = ns("color_picker"),
                               label = "Color",
                               choices = avail_choices,
                               selectize = FALSE)
@@ -46,26 +81,14 @@ mod_cat_name_picker_server <- function(id){
 
     chosen_name_reac <-
       eventReactive(eventExpr = input$get_name, valueExpr = {
-        sel_color <- input$color_picker
-        sel_breed <- input$breed_picker
+        req(filtered_cat_names())
 
-        avail_names <-
-          cat_names
+        filtered_cat_names <- filtered_cat_names()
 
-        if (!is.null(sel_color)) {
-          avail_names <-
-            avail_names %>%
-            dplyr::filter(color == sel_color)
-        }
-
-        if (!is.null(sel_breed)) {
-          avail_names <-
-            avail_names %>%
-            dplyr::filter(breed == sel_breed)
-        }
+        if (nrow(filtered_cat_names) == 0) { return("No cats like that!")}
 
         chosen_name <-
-          paste0(sample(x = avail_names$name, size = 1),
+          paste0(sample(x = filtered_cat_names$name, size = 1),
                  " is the best name!")
 
         return(chosen_name)
@@ -77,11 +100,12 @@ mod_cat_name_picker_server <- function(id){
 
         return(chosen_name_reac())
       })
+
+    output$plot_image <-
+      renderImage({
+        return(list(src = "inst/nyan.gif",
+                    width = "100%"))
+      })
+
   })
 }
-
-## To be copied in the UI
-# mod_cat_name_picker_ui("cat_name_picker_ui_1")
-
-## To be copied in the server
-# mod_cat_name_picker_server("cat_name_picker_ui_1")

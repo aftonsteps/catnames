@@ -10,7 +10,7 @@ app_ui <- function(request) {
     golem_add_external_resources(),
     # Your application UI logic
     fluidPage(
-      h1("catnames"),
+      h1("Cat Name Generator"),
       mod_cat_name_picker_ui("cat_name_picker_1")
     )
   )
