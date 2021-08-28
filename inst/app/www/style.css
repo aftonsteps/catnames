@@ -1,0 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Cute+Font&display=swap');
+
+
+body {
+  font-family: 'Cute Font', cursive;
+  background-image: url("cat-background.jpg");
+  background-size: contain;
+}
+
+h1 {
+  color: #22AED1;
+}
+
+.btn {
+  color: #6DAEDB;
+  background-color: aliceblue;
+}
+
+.catname {
+  margin-top: 10px;
+  font-size: 24pt;
+  background-color: #FBCAEF;
+}

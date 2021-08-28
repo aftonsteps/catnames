@@ -10,12 +10,18 @@
 mod_cat_name_picker_ui <- function(id){
   ns <- NS(id)
   tagList(
-    uiOutput(outputId = ns("breed_picker")),
-    uiOutput(outputId = ns("color_picker")),
-    actionButton(inputId = ns("get_name"),
-                 label = "Generate Name!"),
-    textOutput(outputId = ns("name_text")),
-    plotOutput(outputId = ns("plot_image"))
+    fluidRow(
+      column(width = 8,
+             uiOutput(outputId = ns("breed_picker")),
+             uiOutput(outputId = ns("color_picker")),
+             actionButton(inputId = ns("get_name"),
+                          label = "Generate Name!"),
+             HTML("<div class='catname'>"),
+             textOutput(outputId = ns("name_text")),
+             HTML("</div>")),
+      column(width = 4,
+             plotOutput(outputId = ns("plot_image")))
+    )
   )
 }
 
@@ -61,7 +67,7 @@ mod_cat_name_picker_server <- function(id){
       renderUI({
         avail_choices <- c("ALL", unique(cat_names$breed))
         breeds <- selectInput(inputId = ns("breed_picker"),
-                              label = "Breed",
+                              label = "1. Breed",
                               choices = avail_choices,
                               selectize = TRUE)
         return(breeds)
@@ -73,7 +79,7 @@ mod_cat_name_picker_server <- function(id){
 
         avail_choices <- c("ALL", unique(breed_filtered_cat_names()$color))
         colors <- selectInput(inputId = ns("color_picker"),
-                              label = "Color",
+                              label = "2. Color",
                               choices = avail_choices,
                               selectize = FALSE)
         return(colors)
@@ -101,11 +107,30 @@ mod_cat_name_picker_server <- function(id){
         return(chosen_name_reac())
       })
 
+    secret_image <-
+      eventReactive(input$get_name, {
+        req(input$breed_picker)
+        req(input$color_picker)
+
+        breed <- input$breed_picker
+        color <- input$color_picker
+
+        acceptable_breeds <- c("Nyan")
+        acceptable_colors <- c("Rainbow")
+
+        req(breed %in% acceptable_breeds &
+              color %in% acceptable_colors)
+
+        if (breed == "Nyan" & color == "Rainbow") {
+          return(list(src = "inst/nyan.gif",
+                      width = "100%"))
+        } else return(NULL)
+      })
+
     output$plot_image <-
       renderImage({
-        return(list(src = "inst/nyan.gif",
-                    width = "100%"))
-      })
+        return(secret_image())
+      }, deleteFile = FALSE)
 
   })
 }

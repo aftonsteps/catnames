@@ -10,8 +10,11 @@ app_ui <- function(request) {
     golem_add_external_resources(),
     # Your application UI logic
     fluidPage(
+      actionButton("browser", "browser"),
+      tags$script("$('#browser').hide();"),
       h1("Cat Name Generator"),
-      mod_cat_name_picker_ui("cat_name_picker_1")
+      mod_cat_name_picker_ui("cat_name_picker_1"),
+      HTML("<a href='https://www.freepik.com/vectors/ornament'>Ornament vector created by rawpixel.com - www.freepik.com</a>")
     )
   )
 }
